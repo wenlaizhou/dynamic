@@ -20,6 +20,26 @@
         </encoder>
     </appender>
 
+    <appender name="smsfail"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${smsfail.log.file.name}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${smsfail.log.file.name}.%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>20mb</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %-5level [%-20thread] %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="allFile"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${all.log.file.name}.log</file>
@@ -45,8 +65,12 @@
         <appender-ref ref="allFile" />
     </appender>
 
+    <!--<appender name="catAppender" class="com.ampmind.framework.monitor.cat.logback.CatAppender">-->
+
+    <!--</appender>-->
+
     <root>
-        <level value="DEBUG" />
+        <level value="ALL" />
         <appender-ref ref="allFile" />
     </root>
 
@@ -67,9 +91,15 @@
         <appender-ref ref="stdout" />
     </logger>
 
+    <logger name="com.ampmind.service.www.security.dao">
+        <level value="DEBUG" />
+        <appender-ref ref="sqlFile" />
+        <appender-ref ref="stdout" />
+    </logger>
+
     <!-- 短信发送失败专用日志 -->
     <logger name="asyncSmsfailLOGGER">
         <level value="INFO" />
-        <appender-ref ref="sqlFile" />
+        <appender-ref ref="smsfail" />
     </logger>
 </configuration>
