@@ -1,6 +1,5 @@
 package com.framework.dynamic.boot;
 
-import ch.qos.logback.core.Middleware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringBootConfiguration;
@@ -21,7 +20,6 @@ public class Bootstrap {
         //engine.run("", "");
         //new SpringApplicationBuilder(Bootstrap.class).web(WebApplicationType.SERVLET).build().run(args);
 
-        System.setProperty(Middleware.LOG_BASE, "d:/log");
         Logger log = LoggerFactory.getLogger("root");
         for (int i = 0; i < 200; i++) {
             log.error("hello world");
