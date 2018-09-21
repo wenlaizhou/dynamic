@@ -1,0 +1,66 @@
+#!/bin/bash
+
+#配置信息
+appName=eureka
+
+host=eureka
+port=8888
+managementPort=${port}
+
+cluster=http://eureka:8888/eureka
+
+zone=${cluster}
+
+jar=eureka-registry.jar
+memory=512m
+##########################################################
+
+#服务配置信息
+logDir="/chj/data/log/${appName}"
+mkdir -p ${logDir}
+JAVA_OPS="-server -d64 -Xmx${memory} -Xms${memory} -verbose:gc"
+JAVA_OPS="${JAVA_OPS} -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps"
+JAVA_OPS="${JAVA_OPS} -XX:+PrintGCDetails -XX:+PrintTenuringDistribution -XX:+PrintCommandLineFlags -XX:+DisableExplicitGC"
+JAVA_OPS="${JAVA_OPS} -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSParallelRemarkEnabled -Xloggc:${logDir}/gc.log"
+JAVA_OPS="${JAVA_OPS} -Djava.security.egd=file:/dev/./urandom"
+JAVA_OPS="${JAVA_OPS} -DappName=${appName}"
+CMD="java ${JAVA_OPS} -Dhost=${host} -Dport=${port} -Dcluster=${cluster} -Dzone=${zone} -jar ${jar} --spring.profiles.active=peer"
+###########################################################
+
+#函数信息
+function fnstart() {
+    nohup ${CMD} >> ${logDir}/console.log 2>&1 &
+    processId=$!
+    echo ${processId} > pid
+    echo "启动完毕"
+    echo "pid 为 ${processId}"
+}
+
+function fnstop() {
+    processId=$(cat pid)
+    echo "开始停止服务, pid 为 : ${processId}"
+    kill ${processId}
+    echo "停止完毕"
+}
+
+function fnrestart() {
+    fnstop
+    fnstart
+}
+#####################################################################
+
+case $1 in
+        start)
+            fnstart
+    ;;
+
+        stop)
+            fnstop
+    ;;
+        restart)
+            fnrestart
+    ;;
+        install)
+            fninstall
+    ;;
+esac
