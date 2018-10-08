@@ -17,6 +17,7 @@ public class ServiceHiApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceHiApplication.class).web(WebApplicationType.SERVLET).build().run(args);
     }
+
     @Value("${server.port}")
     String port;
 
