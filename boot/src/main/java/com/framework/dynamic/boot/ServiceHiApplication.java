@@ -1,17 +1,24 @@
 package com.framework.dynamic.boot;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
+import org.springframework.cloud.netflix.turbine.EnableTurbine;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -25,8 +32,28 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableEurekaClient
 @RestController
 @EnableSwagger2
+@EnableHystrix
+@EnableHystrixDashboard
+@EnableCircuitBreaker
+@EnableTurbine
+@Service
 @Api(description = "测试接口", value = "测试测试")
 public class ServiceHiApplication {
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    @HystrixCommand(fallbackMethod = "hiError")
+    @HystrixProperty(name = "hystrix.command.default.circuitBreaker.requestVolumeThreshold", value = "1")
+    @ApiOperation("i service")
+    @GetMapping("i")
+    public String iService(String name) {
+        return restTemplate.getForObject("http://SERVICE-HI/hi?name=" + name, String.class);
+    }
+
+    public String hiError(String name) {
+        return "hi," + name + ",sorry,error!";
+    }
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(ServiceHiApplication.class).web(WebApplicationType.SERVLET).build().run(args);
@@ -34,6 +61,12 @@ public class ServiceHiApplication {
 
     @Value("${server.port}")
     String port;
+
+    @Bean
+    @LoadBalanced
+    RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
 
     @Bean
