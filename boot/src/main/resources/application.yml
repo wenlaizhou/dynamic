@@ -14,3 +14,14 @@ management.endpoints.web:
   exposure:
     include: "*"
     exclude: ""
+
+turbine:
+  app-config: service-hi,service-lucy
+  aggregator:
+    clusterConfig: default
+  clusterNameExpression: new String("default")
+  combine-host: true
+  instanceUrlSuffix:
+    default: hystrix.stream
+
+spring.zipkin.base-url: http://localhost:9411

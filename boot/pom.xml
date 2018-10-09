@@ -13,6 +13,15 @@
 
     <dependencies>
 
+        <!--trace-->
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+        </dependency>
+
+        <!---->
+
         <!--hystrix-->
 
         <dependency>
