@@ -15,6 +15,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.cloud.netflix.turbine.EnableTurbine;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class ServiceHiApplication {
 
     @Autowired
+    ApplicationContext context;
+
+    @Autowired
     RestTemplate restTemplate;
 
     @HystrixCommand(fallbackMethod = "hiError")
@@ -48,6 +52,7 @@ public class ServiceHiApplication {
     @ApiOperation("i service")
     @GetMapping("i")
     public String iService(String name) {
+        System.out.println(context);
         return restTemplate.getForObject("http://SERVICE-HI/hi?name=" + name, String.class);
     }
 
