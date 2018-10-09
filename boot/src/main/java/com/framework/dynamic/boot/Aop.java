@@ -1,10 +1,8 @@
 package com.framework.dynamic.boot;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -30,12 +28,10 @@ public class Aop {
     public void webLog() {
     }
 
-    @Before("webLog()")
+    @Before("execution(* com.framework..*.iService(..))")
     public void doBefore(JoinPoint joinPoint) {
         Object arg1 = joinPoint.getArgs()[0];
-        arg1 = "asd";
-
-        System.err.println(joinPoint.getArgs());
+        System.err.println(arg1);
 
     }
 
