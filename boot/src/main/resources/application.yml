@@ -10,10 +10,9 @@ eureka:
     serviceUrl:
       defaultZone: http://eureka-dev.chj.cloud/eureka/
 
-management.endpoints.web:
-  exposure:
-    include: "*"
-    exclude: ""
+management.endpoints.web.exposure:
+  include: "*"
+  exclude: ""
 
 turbine:
   app-config: service-hi,service-lucy
