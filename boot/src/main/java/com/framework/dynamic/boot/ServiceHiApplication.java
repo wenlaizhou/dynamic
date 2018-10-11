@@ -47,8 +47,10 @@ public class ServiceHiApplication {
     @Autowired
     RestTemplate restTemplate;
 
-    @HystrixCommand(fallbackMethod = "hiError")
-    @HystrixProperty(name = "hystrix.command.default.circuitBreaker.requestVolumeThreshold", value = "1")
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000"),
+            @HystrixProperty(name = "execution.timeout.enabled", value = "false")},
+            fallbackMethod = "findByIdFallback")
     @ApiOperation("i service")
     @GetMapping("i")
     public String iService(String name) {
